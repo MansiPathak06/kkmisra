@@ -1,6 +1,10 @@
 "use client";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef } from "react";
 
-import { useEffect, useRef, useState } from "react";
+// Register ScrollTrigger plugin once at module level (safe for Next.js client components)
+gsap.registerPlugin(ScrollTrigger);
 
 const cards = [
   {
@@ -57,16 +61,16 @@ const CameraIcon = () => (
 /* ── Mic waveform icon ── */
 const MicWave = () => (
   <svg viewBox="0 0 160 52" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-36 sm:w-44 opacity-80">
-    {[6,10,16,10,14,8,18,12,6].map((h,i) => (
-      <rect key={`l${i}`} x={4+i*6} y={26-h/2} width="4" height={h} rx="2" fill="#ddd" />
+    {[6, 10, 16, 10, 14, 8, 18, 12, 6].map((h, i) => (
+      <rect key={`l${i}`} x={4 + i * 6} y={26 - h / 2} width="4" height={h} rx="2" fill="#ddd" />
     ))}
     <circle cx="80" cy="26" r="18" stroke="#eee" strokeWidth="2.5" fill="rgba(0,0,0,0.3)" />
     <rect x="74" y="13" width="12" height="20" rx="6" fill="#fff" />
     <path d="M68 30c0 6.6 5.4 12 12 12s12-5.4 12-12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
     <line x1="80" y1="42" x2="80" y2="48" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
     <line x1="74" y1="48" x2="86" y2="48" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-    {[6,12,8,18,8,14,10,6,4].map((h,i) => (
-      <rect key={`r${i}`} x={100+i*6} y={26-h/2} width="4" height={h} rx="2" fill="#ddd" />
+    {[6, 12, 8, 18, 8, 14, 10, 6, 4].map((h, i) => (
+      <rect key={`r${i}`} x={100 + i * 6} y={26 - h / 2} width="4" height={h} rx="2" fill="#ddd" />
     ))}
   </svg>
 );
@@ -96,11 +100,6 @@ const VideoControls = () => (
   </div>
 );
 
-/* ── Orange dot ── */
-const Dot = ({ style }) => (
-  <div className="w-3 h-3 rounded-full absolute" style={{ background: "#f97316", ...style }} />
-);
-
 /* ── Individual card ── */
 function Card({ card, index }) {
   const cardRef = useRef(null);
@@ -110,47 +109,69 @@ function Card({ card, index }) {
   const dotsRef = useRef([]);
 
   const clipEven = "polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%)";
-  const clipOdd  = "polygon(28px 0, 100% 0, 100% 100%, 0 100%, 0 28px)";
+  const clipOdd = "polygon(28px 0, 100% 0, 100% 100%, 0 100%, 0 28px)";
 
   const handleMouseEnter = () => {
-    if (!window.gsap) return;
-    const gsap = window.gsap;
+    if (!cardRef.current) return;
+
     gsap.to(cardRef.current, { scale: 1.018, duration: 0.4, ease: "power2.out" });
-    gsap.to(glowRef.current, { opacity: 1, duration: 0.4, ease: "power2.out" });
-    gsap.to(labelRef.current, {
-      background: "#ea6000",
-      paddingLeft: "20px",
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    gsap.to(dotsRef.current.filter(Boolean), {
-      scale: 1.5,
-      duration: 0.35,
-      ease: "back.out(2)",
-      stagger: 0.06,
-    });
+
+    if (glowRef.current) {
+      gsap.to(glowRef.current, { opacity: 1, duration: 0.4, ease: "power2.out" });
+    }
+
+    if (labelRef.current) {
+      gsap.to(labelRef.current, {
+        background: "#ea6000",
+        paddingLeft: "20px",
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    }
+
+    const validDots = dotsRef.current.filter(Boolean);
+    if (validDots.length > 0) {
+      gsap.to(validDots, {
+        scale: 1.5,
+        duration: 0.35,
+        ease: "back.out(2)",
+        stagger: 0.06,
+      });
+    }
+
     if (contentRef.current) {
       gsap.to(contentRef.current, { y: -4, duration: 0.4, ease: "power2.out" });
     }
   };
 
   const handleMouseLeave = () => {
-    if (!window.gsap) return;
-    const gsap = window.gsap;
+    if (!cardRef.current) return;
+
     gsap.to(cardRef.current, { scale: 1, duration: 0.45, ease: "power2.inOut" });
-    gsap.to(glowRef.current, { opacity: 0, duration: 0.4, ease: "power2.inOut" });
-    gsap.to(labelRef.current, {
-      background: "#f97316",
-      paddingLeft: "14px",
-      duration: 0.3,
-      ease: "power2.inOut",
-    });
-    gsap.to(dotsRef.current.filter(Boolean), {
-      scale: 1,
-      duration: 0.3,
-      ease: "power2.inOut",
-      stagger: 0.04,
-    });
+
+    if (glowRef.current) {
+      gsap.to(glowRef.current, { opacity: 0, duration: 0.4, ease: "power2.inOut" });
+    }
+
+    if (labelRef.current) {
+      gsap.to(labelRef.current, {
+        background: "#f97316",
+        paddingLeft: "14px",
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+    }
+
+    const validDots = dotsRef.current.filter(Boolean);
+    if (validDots.length > 0) {
+      gsap.to(validDots, {
+        scale: 1,
+        duration: 0.3,
+        ease: "power2.inOut",
+        stagger: 0.04,
+      });
+    }
+
     if (contentRef.current) {
       gsap.to(contentRef.current, { y: 0, duration: 0.4, ease: "power2.inOut" });
     }
@@ -211,7 +232,9 @@ function Card({ card, index }) {
       <div
         style={{
           position: "absolute",
-          top: 0, left: 0, right: 0,
+          top: 0,
+          left: 0,
+          right: 0,
           height: 3,
           background: "linear-gradient(90deg, transparent, #f97316, transparent)",
           zIndex: 10,
@@ -242,16 +265,40 @@ function Card({ card, index }) {
       ))}
 
       {/* Content */}
-      <div ref={contentRef} style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative", zIndex: 5 }}>
-
+      <div
+        ref={contentRef}
+        style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative", zIndex: 5 }}
+      >
         {/* ── Gallery ── */}
         {card.type === "gallery" && (
-          <div style={{ flex: 1, padding: "clamp(12px,2vw,20px)", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div
+            style={{
+              flex: 1,
+              padding: "clamp(12px,2vw,20px)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {card.images.slice(0, 4).map((src, i) => (
-                <div key={i} style={{ border: "4px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 14px rgba(0,0,0,0.5)", overflow: "hidden", aspectRatio: "4/3" }}>
-                  <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    onError={e => { e.target.parentNode.style.background = `hsl(${200+i*30},8%,${38+i*5}%)`; }} />
+                <div
+                  key={i}
+                  style={{
+                    border: "4px solid rgba(255,255,255,0.88)",
+                    boxShadow: "0 4px 14px rgba(0,0,0,0.5)",
+                    overflow: "hidden",
+                    aspectRatio: "4/3",
+                  }}
+                >
+                  <img
+                    src={src}
+                    alt=""
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    onError={(e) => {
+                      e.target.parentNode.style.background = `hsl(${200 + i * 30},8%,${38 + i * 5}%)`;
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -259,9 +306,23 @@ function Card({ card, index }) {
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <CameraIcon />
               </div>
-              <div style={{ flex: 1, border: "4px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 14px rgba(0,0,0,0.5)", overflow: "hidden", aspectRatio: "3/4" }}>
-                <img src={card.images[4]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                  onError={e => { e.target.parentNode.style.background = "#505050"; }} />
+              <div
+                style={{
+                  flex: 1,
+                  border: "4px solid rgba(255,255,255,0.88)",
+                  boxShadow: "0 4px 14px rgba(0,0,0,0.5)",
+                  overflow: "hidden",
+                  aspectRatio: "3/4",
+                }}
+              >
+                <img
+                  src={card.images[4]}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  onError={(e) => {
+                    e.target.parentNode.style.background = "#505050";
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -269,26 +330,121 @@ function Card({ card, index }) {
 
         {/* ── Quotes ── */}
         {card.type === "quotes" && (
-          <div style={{ flex: 1, padding: "clamp(12px,2vw,24px)", display: "flex", flexDirection: "column", justifyContent: "center", gap: 16, position: "relative" }}>
-            <div style={{ position: "absolute", top: 12, left: 16, fontFamily: "Georgia,serif", fontSize: "clamp(56px,7vw,88px)", color: "#f97316", lineHeight: 1, userSelect: "none", opacity: 0.7 }}>"</div>
-            <div style={{ border: "4px solid rgba(255,255,255,0.88)", boxShadow: "0 6px 18px rgba(0,0,0,0.5)", overflow: "hidden", aspectRatio: "4/3", transform: "rotate(-2deg)", marginTop: 24, alignSelf: "center", width: "80%" }}>
-              <img src={card.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={e => { e.target.parentNode.style.background = "#555"; }} />
+          <div
+            style={{
+              flex: 1,
+              padding: "clamp(12px,2vw,24px)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 16,
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: 12,
+                left: 16,
+                fontFamily: "Georgia,serif",
+                fontSize: "clamp(56px,7vw,88px)",
+                color: "#f97316",
+                lineHeight: 1,
+                userSelect: "none",
+                opacity: 0.7,
+              }}
+            >
+              "
             </div>
-            <div style={{ border: "4px solid rgba(255,255,255,0.88)", boxShadow: "0 6px 18px rgba(0,0,0,0.5)", overflow: "hidden", aspectRatio: "4/3", transform: "rotate(1.8deg)", alignSelf: "flex-end", width: "62%", marginTop: -20 }}>
-              <img src={card.images[1]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={e => { e.target.parentNode.style.background = "#666"; }} />
+            <div
+              style={{
+                border: "4px solid rgba(255,255,255,0.88)",
+                boxShadow: "0 6px 18px rgba(0,0,0,0.5)",
+                overflow: "hidden",
+                aspectRatio: "4/3",
+                transform: "rotate(-2deg)",
+                marginTop: 24,
+                alignSelf: "center",
+                width: "80%",
+              }}
+            >
+              <img
+                src={card.images[0]}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                onError={(e) => {
+                  e.target.parentNode.style.background = "#555";
+                }}
+              />
             </div>
-            <div style={{ position: "absolute", bottom: 54, right: 14, fontFamily: "Georgia,serif", fontSize: "clamp(56px,7vw,88px)", color: "#f97316", lineHeight: 1, userSelect: "none", opacity: 0.7 }}>"</div>
+            <div
+              style={{
+                border: "4px solid rgba(255,255,255,0.88)",
+                boxShadow: "0 6px 18px rgba(0,0,0,0.5)",
+                overflow: "hidden",
+                aspectRatio: "4/3",
+                transform: "rotate(1.8deg)",
+                alignSelf: "flex-end",
+                width: "62%",
+                marginTop: -20,
+              }}
+            >
+              <img
+                src={card.images[1]}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                onError={(e) => {
+                  e.target.parentNode.style.background = "#666";
+                }}
+              />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                bottom: 54,
+                right: 14,
+                fontFamily: "Georgia,serif",
+                fontSize: "clamp(56px,7vw,88px)",
+                color: "#f97316",
+                lineHeight: 1,
+                userSelect: "none",
+                opacity: 0.7,
+              }}
+            >
+              "
+            </div>
           </div>
         )}
 
         {/* ── Videos ── */}
         {card.type === "videos" && (
-          <div style={{ flex: 1, padding: "clamp(12px,2vw,24px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "relative", width: "100%", aspectRatio: "16/10", boxShadow: "0 8px 32px rgba(0,0,0,0.7)", border: "2px solid rgba(255,255,255,0.15)", overflow: "hidden" }}>
-              <img src={card.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={e => { e.target.parentNode.style.background = "#2a2a2a"; }} />
+          <div
+            style={{
+              flex: 1,
+              padding: "clamp(12px,2vw,24px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                aspectRatio: "16/10",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
+                border: "2px solid rgba(255,255,255,0.15)",
+                overflow: "hidden",
+              }}
+            >
+              <img
+                src={card.images[0]}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                onError={(e) => {
+                  e.target.parentNode.style.background = "#2a2a2a";
+                }}
+              />
               <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.28)" }} />
               <PlayBtn />
               <VideoControls />
@@ -302,16 +458,39 @@ function Card({ card, index }) {
             <img
               src={card.images[0]}
               alt="KK Misra"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-              onError={e => { e.target.parentNode.style.background = "linear-gradient(135deg,#2a2a2a,#4a4a4a)"; }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "top",
+              }}
+              onError={(e) => {
+                e.target.parentNode.style.background = "linear-gradient(135deg,#2a2a2a,#4a4a4a)";
+              }}
             />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)" }} />
-            <div style={{ position: "absolute", bottom: 54, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 54,
+                left: 0,
+                right: 0,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <MicWave />
             </div>
           </div>
         )}
-
       </div>
 
       {/* ── Label strip ── */}
@@ -343,25 +522,13 @@ export default function MediaSection() {
   const cardWrapRefs = useRef([]);
 
   useEffect(() => {
-    const loadScript = (src) =>
-      new Promise((res) => {
-        if (document.querySelector(`script[src="${src}"]`) && window.gsap) return res();
-        const s = document.createElement("script");
-        s.src = src;
-        s.onload = res;
-        document.head.appendChild(s);
-      });
+    if (!sectionRef.current) return;
 
-    (async () => {
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
-      window.gsap.registerPlugin(window.ScrollTrigger);
+    const els = cardWrapRefs.current.filter(Boolean);
+    if (els.length === 0) return;
 
-      const gsap = window.gsap;
-      const ScrollTrigger = window.ScrollTrigger;
-
-      const els = cardWrapRefs.current.filter(Boolean);
-
+    // Use gsap.context() for scoped, automatic cleanup
+    const ctx = gsap.context(() => {
       // Set initial states — alternating from left / right
       els.forEach((el, i) => {
         gsap.set(el, {
@@ -372,15 +539,13 @@ export default function MediaSection() {
         });
       });
 
-      const tl = gsap.timeline({
+      gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 75%",
           once: true,
         },
-      });
-
-      tl.to(els, {
+      }).to(els, {
         opacity: 1,
         x: 0,
         scale: 1,
@@ -392,11 +557,10 @@ export default function MediaSection() {
           from: "start",
         },
       });
-    })();
+    }, sectionRef);
 
-    return () => {
-      if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
+    // ctx.revert() cleans up all GSAP animations and ScrollTriggers created inside ctx
+    return () => ctx.revert();
   }, []);
 
   return (

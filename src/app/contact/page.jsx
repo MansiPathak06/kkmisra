@@ -113,14 +113,14 @@ export default function ContactPage() {
 //   const MapBandRef = useRef(null);
 
   /* ── Load GSAP + ScrollTrigger ── */
-  useEffect(() => {
-    const load = (src) =>
-      new Promise((res) => {
-        if (document.querySelector(`script[src="${src}"]`)) return res();
-        const s = document.createElement("script");
-        s.src = src; s.onload = res;
-        document.head.appendChild(s);
-      });
+//   useEffect(() => {
+//     const load = (src) =>
+//       new Promise((res) => {
+//         if (document.querySelector(`script[src="${src}"]`)) return res();
+//         const s = document.createElement("script");
+//         s.src = src; s.onload = res;
+//         document.head.appendChild(s);
+    //   });
 
 //     (async () => {
 //       await load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
@@ -292,61 +292,59 @@ useEffect(() => {
   };
 }, []);
 
-    return () => {
-      if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
+//     return () => {
+//       if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach(t => t.kill());
+//     };
+//   }, []);
 
   /* ── Info card hover ── */
   const onInfoEnter = (el) => {
-    if (!window.gsap) return;
-    window.gsap.to(el, { x: 6, boxShadow: "0 8px 32px rgba(249,115,22,0.18)", duration: 0.3, ease: "power2.out" });
+   
+    gsap.to(el, { x: 6, boxShadow: "0 8px 32px rgba(249,115,22,0.18)", duration: 0.3, ease: "power2.out" });
     const icon = el.querySelector(".info-icon");
-    if (icon) window.gsap.to(icon, { scale: 1.2, color: "#f97316", duration: 0.3, ease: "back.out(2)" });
+    if (icon) gsap.to(icon, { scale: 1.2, color: "#f97316", duration: 0.3, ease: "back.out(2)" });
   };
   const onInfoLeave = (el) => {
-    if (!window.gsap) return;
-    window.gsap.to(el, { x: 0, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", duration: 0.35, ease: "power2.inOut" });
+   gsap.to(el, { x: 0, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", duration: 0.35, ease: "power2.inOut" });
     const icon = el.querySelector(".info-icon");
-    if (icon) window.gsap.to(icon, { scale: 1, color: "#f97316", duration: 0.3, ease: "power2.inOut" });
+    if (icon) gsap.to(icon, { scale: 1, color: "#f97316", duration: 0.3, ease: "power2.inOut" });
   };
 
   /* ── Social hover ── */
   const onSocialEnter = (el) => {
-    if (!window.gsap) return;
-    window.gsap.to(el, { scale: 1.18, y: -4, background: "#f97316", color: "#fff",
+    gsap.to(el, { scale: 1.18, y: -4, background: "#f97316", color: "#fff",
       boxShadow: "0 8px 20px rgba(249,115,22,0.4)", duration: 0.28, ease: "back.out(1.8)" });
   };
   const onSocialLeave = (el) => {
-    if (!window.gsap) return;
-    window.gsap.to(el, { scale: 1, y: 0, background: "rgba(249,115,22,0.08)", color: "#f97316",
+    gsap.to(el, { scale: 1, y: 0, background: "rgba(249,115,22,0.08)", color: "#f97316",
       boxShadow: "none", duration: 0.3, ease: "power2.inOut" });
   };
 
   /* ── Submit hover ── */
   const onSubmitEnter = (e) => {
-    if (!window.gsap) return;
-    window.gsap.to(e.currentTarget, { scale: 1.04, boxShadow: "0 8px 28px rgba(249,115,22,0.45)", duration: 0.25, ease: "power2.out" });
+gsap.to(e.currentTarget, { scale: 1.04, boxShadow: "0 8px 28px rgba(249,115,22,0.45)", duration: 0.25, ease: "power2.out" });
   };
   const onSubmitLeave = (e) => {
-    if (!window.gsap) return;
-    window.gsap.to(e.currentTarget, { scale: 1, boxShadow: "0 3px 14px rgba(249,115,22,0.28)", duration: 0.3, ease: "power2.inOut" });
+    gsap.to(e.currentTarget, { scale: 1, boxShadow: "0 3px 14px rgba(249,115,22,0.28)", duration: 0.3, ease: "power2.inOut" });
   };
   const onSubmitDown = (e) => {
-    if (!window.gsap) return;
-    window.gsap.to(e.currentTarget, { scale: 0.97, duration: 0.1 });
+   gsap.to(e.currentTarget, { scale: 0.97, duration: 0.1 });
   };
 
   /* ── Form submit ── */
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!window.gsap || !formRef.current) return;
-    const gsap = window.gsap;
-    gsap.to(formRef.current, {
-      scale: 0.97, opacity: 0, y: 10, duration: 0.4, ease: "power2.in",
-      onComplete: () => setSubmitted(true),
-    });
-  };
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  if (!formRef.current) return;
+
+  gsap.to(formRef.current, {
+    scale: 0.97,
+    opacity: 0,
+    y: 10,
+    duration: 0.4,
+    ease: "power2.in",
+    onComplete: () => setSubmitted(true),
+  });
+};
 
   const handleChange = (e) => setFormState(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -354,12 +352,12 @@ useEffect(() => {
   const onInputFocus = (e, name) => {
     setFocusedField(name);
     const label = e.currentTarget.previousSibling;
-    if (label && window.gsap) window.gsap.to(label, { color: "#f97316", x: 2, duration: 0.2 });
+    if (label ) gsap.to(label, { color: "#f97316", x: 2, duration: 0.2 });
   };
   const onInputBlur = (e, name) => {
     setFocusedField(null);
     const label = e.currentTarget.previousSibling;
-    if (label && window.gsap) window.gsap.to(label, { color: "#555", x: 0, duration: 0.2 });
+    if (label ) gsap.to(label, { color: "#555", x: 0, duration: 0.2 });
   };
 
   /* ── Shared input style ── */
@@ -820,9 +818,12 @@ useEffect(() => {
 /* ── Success message ── */
 function SuccessState() {
   const ref = useRef(null);
+
   useEffect(() => {
-    if (!window.gsap || !ref.current) return;
-    window.gsap.fromTo(ref.current,
+    if (!ref.current) return;
+
+    gsap.fromTo(
+      ref.current,
       { scale: 0.85, opacity: 0, y: 20 },
       { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.6)" }
     );
@@ -877,20 +878,26 @@ function SuccessState() {
 /* ── Map band (decorative placeholder) ── */
 function MapBand() {
   const ref = useRef(null);
+
   useEffect(() => {
-  // ✅ ADD SAFETY CHECK: Wait for GSAP + element to exist
-  const checkReady = () => {
-    if (!window.gsap || !window.ScrollTrigger || !ref.current) {
-      requestAnimationFrame(checkReady);  // Try again next frame
-      return;
-    }
-    window.gsap.fromTo(ref.current, { opacity: 0, y: 30 }, {
-      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-      scrollTrigger: { trigger: ref.current, start: "top 85%", once: true }
-    });
-  };
-  checkReady();
-}, []);
+    if (!ref.current) return;
+
+    gsap.fromTo(
+      ref.current,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 85%",
+          once: true,
+        },
+      }
+    );
+  }, []);
   return (
     <div ref={ref} style={{
       maxWidth: 1200, margin: "0 auto clamp(48px,6vw,80px)",

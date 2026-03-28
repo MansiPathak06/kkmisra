@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 
 export default function AboutSection() {
@@ -13,102 +15,56 @@ export default function AboutSection() {
   const btnRef = useRef(null);
 
   useEffect(() => {
-    let gsap, ScrollTrigger;
+    gsap.registerPlugin(ScrollTrigger);
 
-    const initGSAP = async () => {
-      // Dynamically load GSAP from CDN
-      await new Promise((resolve) => {
-        if (window.gsap) return resolve();
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js";
-        script.onload = resolve;
-        document.head.appendChild(script);
-      });
+    if (!sectionRef.current) return;
 
-      await new Promise((resolve) => {
-        if (window.ScrollTrigger) return resolve();
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js";
-        script.onload = resolve;
-        document.head.appendChild(script);
-      });
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 75%",
+        once: true,
+      },
+    });
 
-      gsap = window.gsap;
-      ScrollTrigger = window.ScrollTrigger;
-      gsap.registerPlugin(ScrollTrigger);
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
-
-      // Image slides in from left
-      tl.fromTo(
-        imageRef.current,
-        { x: -120, opacity: 0, scale: 0.92 },
-        {
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.1,
-          ease: "power3.out",
-        }
-      );
-
-      // "About" tag slides from right
-      tl.fromTo(
+    tl.fromTo(
+      imageRef.current,
+      { x: -120, opacity: 0, scale: 0.92 },
+      { x: 0, opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" },
+    )
+      .fromTo(
         tagRef.current,
         { x: 80, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-        "-=0.7"
-      );
-
-      // Heading slides from right with slight delay
-      tl.fromTo(
+        { x: 0, opacity: 1, duration: 0.6 },
+        "-=0.7",
+      )
+      .fromTo(
         headingRef.current,
         { x: 100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
-        "-=0.45"
-      );
-
-      // Underline expands from left
-      tl.fromTo(
+        { x: 0, opacity: 1, duration: 0.7 },
+        "-=0.45",
+      )
+      .fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, duration: 0.5, ease: "power2.out" },
-        "-=0.35"
-      );
-
-      // Paragraphs stagger in from right
-      tl.fromTo(
+        { scaleX: 1, duration: 0.5 },
+        "-=0.35",
+      )
+      .fromTo(
         [desc1Ref.current, desc2Ref.current],
         { x: 70, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.65,
-          ease: "power2.out",
-          stagger: 0.18,
-        },
-        "-=0.3"
-      );
-
-      // Button pops in
-      tl.fromTo(
+        { x: 0, opacity: 1, duration: 0.65, stagger: 0.18 },
+        "-=0.3",
+      )
+      .fromTo(
         btnRef.current,
         { y: 24, opacity: 0, scale: 0.9 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.7)" },
-        "-=0.2"
+        { y: 0, opacity: 1, scale: 1, duration: 0.55 },
+        "-=0.2",
       );
-    };
-
-    initGSAP();
 
     return () => {
-      if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach((t) => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
 
@@ -118,7 +74,6 @@ export default function AboutSection() {
       className="w-full py-16 md:py-24 px-4 md:px-16 bg-gradient-to-b from-white to-orange-50 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-
         {/* LEFT IMAGE */}
         <div ref={imageRef} className="w-full opacity-0">
           <div className="relative group cursor-pointer">
@@ -142,7 +97,6 @@ export default function AboutSection() {
 
         {/* RIGHT CONTENT */}
         <div className="flex flex-col justify-center">
-
           {/* ABOUT TAG */}
           <p
             ref={tagRef}
@@ -188,9 +142,10 @@ export default function AboutSection() {
             className="opacity-0 text-gray-600 text-sm md:text-base leading-relaxed mb-8 max-w-xl"
           >
             His electoral affidavit provides a comprehensive overview of his
-            assets, liabilities, educational background, and legal records—offering
-            citizens clear insight into his professional journey. Through his work,
-            he continues to emphasize accountability, integrity, and service to the nation.
+            assets, liabilities, educational background, and legal
+            records—offering citizens clear insight into his professional
+            journey. Through his work, he continues to emphasize accountability,
+            integrity, and service to the nation.
           </p>
 
           {/* BUTTON */}
@@ -198,36 +153,38 @@ export default function AboutSection() {
             ref={btnRef}
             className="opacity-0 relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg w-fit font-semibold tracking-wide shadow-lg hover:shadow-orange-300 hover:shadow-xl transition-all duration-300 group"
             onMouseEnter={(e) => {
-              if (window.gsap) {
-                window.gsap.to(e.currentTarget, { scale: 1.05, duration: 0.25, ease: "power2.out" });
-              }
+              gsap.to(e.currentTarget, {
+                scale: 1.05,
+                duration: 0.25,
+                ease: "power2.out",
+              });
             }}
             onMouseLeave={(e) => {
-              if (window.gsap) {
-                window.gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.inOut" });
-              }
+              gsap.to(e.currentTarget, {
+                scale: 1,
+                duration: 0.3,
+                ease: "power2.inOut",
+              });
             }}
           >
-           
-
-<Link href="/about" className="group inline-block">
-  <span className="relative z-10 flex items-center gap-2">
-    Explore Full Profile
-    <svg
-      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M17 8l4 4m0 0l-4 4m4-4H3"
-      />
-    </svg>
-  </span>
-</Link>
+            <Link href="/about" className="group inline-block">
+              <span className="relative z-10 flex items-center gap-2">
+                Explore Full Profile
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </span>
+            </Link>
             {/* Shine sweep */}
             <span className="absolute top-0 -left-full h-full w-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:left-full transition-all duration-700 ease-in-out" />
           </button>
