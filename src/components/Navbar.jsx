@@ -283,7 +283,7 @@ export default function Navbar() {
             {/* CTA button */}
             <li>
               <a
-                href="/connect"
+                href="/contact"
                 onMouseEnter={onCtaEnter}
                 onMouseLeave={onCtaLeave}
                 style={{

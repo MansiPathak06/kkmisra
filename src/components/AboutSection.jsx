@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 export default function AboutSection() {
   const sectionRef = useRef(null);
@@ -207,12 +208,26 @@ export default function AboutSection() {
               }
             }}
           >
-            <span className="relative z-10 flex items-center gap-2">
-              Explore Full Profile
-              <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </span>
+           
+
+<Link href="/about" className="group inline-block">
+  <span className="relative z-10 flex items-center gap-2">
+    Explore Full Profile
+    <svg
+      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17 8l4 4m0 0l-4 4m4-4H3"
+      />
+    </svg>
+  </span>
+</Link>
             {/* Shine sweep */}
             <span className="absolute top-0 -left-full h-full w-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:left-full transition-all duration-700 ease-in-out" />
           </button>
