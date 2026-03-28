@@ -106,86 +106,180 @@ function NewsCard({ item, cardRef }) {
   }, [cardRef]);
 
   return (
-    <div
-      ref={cardRef}
-      className="flex gap-4 items-start cursor-pointer bg-white rounded-xl p-3 sm:p-4"
-      style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)", willChange: "transform" }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Thumbnail */}
-      <div className="flex-shrink-0 w-28 h-20 sm:w-36 sm:h-24 lg:w-44 lg:h-28 overflow-hidden rounded-lg relative">
-        <img
-          ref={imgRef}
-          src={item.image}
-          alt={item.title}
-          className="w-full h-full object-cover"
-          style={{ willChange: "transform" }}
-          onError={(e) => {
-            e.target.style.background = "linear-gradient(135deg,#f97316,#ea580c)";
-          }}
-        />
-        {/* Shimmer overlay on hover */}
+    <>
+      <style>{`
+        .news-card {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+          cursor: pointer;
+          background: white;
+          border-radius: 12px;
+          padding: 12px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+          will-change: transform;
+        }
+
+        /* Mobile: stack image on top of text */
+        @media (max-width: 479px) {
+          .news-card {
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+          }
+          .news-thumb {
+            width: 100% !important;
+            height: 160px !important;
+          }
+        }
+
+        /* Small phones (480px+): horizontal with small thumbnail */
+        @media (min-width: 480px) and (max-width: 639px) {
+          .news-thumb {
+            width: 110px !important;
+            height: 80px !important;
+          }
+        }
+
+        /* Tablets (640px+) */
+        @media (min-width: 640px) and (max-width: 1023px) {
+          .news-card {
+            padding: 14px;
+            gap: 14px;
+          }
+          .news-thumb {
+            width: 140px !important;
+            height: 96px !important;
+          }
+        }
+
+        /* Desktop (1024px+) */
+        @media (min-width: 1024px) {
+          .news-card {
+            padding: 16px;
+            gap: 16px;
+          }
+          .news-thumb {
+            width: 176px !important;
+            height: 112px !important;
+          }
+        }
+
+        .news-title {
+          font-size: clamp(13px, 2.5vw, 15px);
+          font-weight: 700;
+          color: #111827;
+          line-height: 1.4;
+          will-change: transform, color;
+        }
+
+        @media (min-width: 768px) {
+          .news-title {
+            font-size: clamp(13px, 1.4vw, 16px);
+          }
+        }
+
+        .news-desc {
+          font-size: clamp(11.5px, 2.2vw, 13px);
+          color: #6b7280;
+          line-height: 1.6;
+        }
+
+        @media (min-width: 768px) {
+          .news-desc {
+            font-size: clamp(11.5px, 1.1vw, 13.5px);
+          }
+        }
+
+        /* Clamp description lines on very small screens */
+        @media (max-width: 479px) {
+          .news-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+        }
+      `}</style>
+
+      <div
+        ref={cardRef}
+        className="news-card"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Thumbnail */}
         <div
-          ref={overlayRef}
-          className="absolute inset-0 rounded-lg"
-          style={{
-            opacity: 0,
-            background:
-              "linear-gradient(120deg, rgba(249,115,22,0.22) 0%, rgba(255,255,255,0.12) 60%, rgba(249,115,22,0.10) 100%)",
-          }}
-        />
-        {/* Date badge */}
-        <div className="absolute bottom-1.5 left-1.5 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
-          {item.date}
-        </div>
-      </div>
-
-      {/* Text */}
-      <div className="flex-1 min-w-0 py-1">
-        <div className="flex items-start justify-between gap-2 mb-1.5">
-          <h3
-            ref={titleRef}
-            className="font-bold text-gray-900 leading-snug"
-            style={{ fontSize: "clamp(13px, 1.3vw, 16px)", willChange: "transform, color" }}
-          >
-            {item.title}
-          </h3>
-          {/* Arrow icon */}
-          <span
-            ref={arrowRef}
-            className="flex-shrink-0 mt-0.5 text-orange-500"
-            style={{ opacity: 0, willChange: "transform, opacity" }}
-          >
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </span>
-        </div>
-
-        {/* Animated underline */}
-        <div className="w-8 h-[3px] bg-gradient-to-r from-orange-400 to-orange-200 rounded-full mb-2" />
-
-        <p
-          className="text-gray-500 leading-relaxed"
-          style={{ fontSize: "clamp(11px, 1.05vw, 13.5px)" }}
+          className="news-thumb flex-shrink-0 overflow-hidden rounded-lg relative"
+          style={{ flexShrink: 0 }}
         >
-          {item.description}
-        </p>
+          <img
+            ref={imgRef}
+            src={item.image}
+            alt={item.title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+              willChange: "transform",
+            }}
+            onError={(e) => {
+              e.target.style.background = "linear-gradient(135deg,#f97316,#ea580c)";
+            }}
+          />
+          {/* Shimmer overlay on hover */}
+          <div
+            ref={overlayRef}
+            className="absolute inset-0 rounded-lg"
+            style={{
+              opacity: 0,
+              background:
+                "linear-gradient(120deg, rgba(249,115,22,0.22) 0%, rgba(255,255,255,0.12) 60%, rgba(249,115,22,0.10) 100%)",
+            }}
+          />
+          {/* Date badge */}
+          <div
+            className="absolute bottom-1.5 left-1.5 bg-orange-500 text-white font-bold rounded-full shadow"
+            style={{ fontSize: "10px", padding: "2px 8px" }}
+          >
+            {item.date}
+          </div>
+        </div>
+
+        {/* Text */}
+        <div style={{ flex: 1, minWidth: 0, paddingTop: 2 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+            <h3 ref={titleRef} className="news-title">
+              {item.title}
+            </h3>
+            {/* Arrow icon */}
+            <span
+              ref={arrowRef}
+              style={{ flexShrink: 0, marginTop: 2, color: "#f97316", opacity: 0, willChange: "transform, opacity" }}
+            >
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </div>
+
+          {/* Animated underline */}
+          <div
+            style={{
+              width: 32,
+              height: 3,
+              background: "linear-gradient(90deg, #f97316, #fbbf24)",
+              borderRadius: 9999,
+              marginBottom: 8,
+            }}
+          />
+
+          <p className="news-desc">{item.description}</p>
+        </div>
       </div>
-    </div>
+    </>
   );
-}
-
-function NewsCardWrapper({ item, index, animRef }) {
-  const cardRef = useRef(null);
-
-  // Store ref for parent to animate
-  useEffect(() => {
-    if (animRef) animRef.current[index] = cardRef.current;
-  }, [animRef, index]);
-
-  return <NewsCard item={item} cardRef={cardRef} />;
 }
 
 export default function NewsUpdates() {
@@ -219,7 +313,6 @@ export default function NewsUpdates() {
       const gsap = window.gsap;
       const ScrollTrigger = window.ScrollTrigger;
 
-      // Set initial hidden state
       gsap.set(headingRef.current, { opacity: 0, y: -30 });
       gsap.set(accentRef.current, { scaleX: 0, transformOrigin: "center" });
       gsap.set(topCardsRefs.current, { opacity: 0, y: 50, scale: 0.96 });
@@ -243,10 +336,7 @@ export default function NewsUpdates() {
             scale: 1,
             duration: 0.65,
             ease: "power3.out",
-            stagger: {
-              amount: 0.45,
-              from: "start",
-            },
+            stagger: { amount: 0.45, from: "start" },
           },
           "-=0.3"
         )
@@ -284,7 +374,6 @@ export default function NewsUpdates() {
         delay: 0.1,
       });
 
-      // Animate button label swap via subtle scale
       gsap.fromTo(btnRef.current, { scale: 0.93 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
     }, 30);
   };
@@ -317,22 +406,17 @@ export default function NewsUpdates() {
     gsap.fromTo(btnRef.current, { scale: 0.93 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
   };
 
-  // Button hover
   const onBtnEnter = (e) => {
-    if (window.gsap)
-      window.gsap.to(e.currentTarget, { scale: 1.05, duration: 0.25, ease: "power2.out" });
+    if (window.gsap) window.gsap.to(e.currentTarget, { scale: 1.05, duration: 0.25, ease: "power2.out" });
   };
   const onBtnLeave = (e) => {
-    if (window.gsap)
-      window.gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.inOut" });
+    if (window.gsap) window.gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.inOut" });
   };
   const onBtnDown = (e) => {
-    if (window.gsap)
-      window.gsap.to(e.currentTarget, { scale: 0.96, duration: 0.12, ease: "power2.in" });
+    if (window.gsap) window.gsap.to(e.currentTarget, { scale: 0.96, duration: 0.12, ease: "power2.in" });
   };
   const onBtnUp = (e) => {
-    if (window.gsap)
-      window.gsap.to(e.currentTarget, { scale: 1.04, duration: 0.2, ease: "back.out(2)" });
+    if (window.gsap) window.gsap.to(e.currentTarget, { scale: 1.04, duration: 0.2, ease: "back.out(2)" });
   };
 
   const visibleNews = allNews.slice(0, 4);
@@ -341,35 +425,128 @@ export default function NewsUpdates() {
   return (
     <section
       ref={sectionRef}
-      className="w-full py-12 sm:py-16 px-4 overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #efefef 0%, #e2e2e2 100%)" }}
+      style={{
+        width: "100%",
+        background: "linear-gradient(160deg, #efefef 0%, #e2e2e2 100%)",
+        overflow: "hidden",
+      }}
     >
-      <div className="max-w-6xl mx-auto">
+      <style>{`
+        .news-section-inner {
+          max-width: 1152px;
+          margin: 0 auto;
+          padding: 40px 16px;
+        }
+
+        @media (min-width: 480px) {
+          .news-section-inner {
+            padding: 48px 20px;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .news-section-inner {
+            padding: 56px 32px;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .news-section-inner {
+            padding: 64px 40px;
+          }
+        }
+
+        .news-heading {
+          font-size: clamp(26px, 7vw, 46px);
+          font-weight: 800;
+          color: #111827;
+          letter-spacing: -0.02em;
+          margin: 0 0 12px;
+        }
+
+        .news-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 14px;
+          margin-bottom: 20px;
+        }
+
+        @media (min-width: 640px) {
+          .news-grid {
+            gap: 16px;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .news-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+          }
+        }
+
+        .news-view-btn {
+          position: relative;
+          overflow: hidden;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          color: #000;
+          border: none;
+          border-radius: 4px;
+          background: linear-gradient(90deg, #f5a800, #f97316);
+          will-change: transform;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          /* Touch-friendly minimum tap target */
+          min-height: 44px;
+          padding: 10px 28px;
+          font-size: 13px;
+        }
+
+        @media (min-width: 480px) {
+          .news-view-btn {
+            padding: 12px 36px;
+            font-size: 14px;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .news-view-btn {
+            padding: 13px 44px;
+            font-size: 15px;
+          }
+        }
+
+        @keyframes shine {
+          0%   { left: -100%; }
+          60%  { left: 120%; }
+          100% { left: 120%; }
+        }
+      `}</style>
+
+      <div className="news-section-inner">
 
         {/* Heading */}
-        <div className="text-center mb-10 sm:mb-12">
-          <h2
-            ref={headingRef}
-            className="font-extrabold text-gray-900 mb-3 tracking-tight"
-            style={{ fontSize: "clamp(28px, 4vw, 46px)" }}
-          >
+        <div style={{ textAlign: "center", marginBottom: "clamp(28px, 5vw, 48px)" }}>
+          <h2 ref={headingRef} className="news-heading">
             Highlights
           </h2>
-          {/* Accent bar */}
           <div
             ref={accentRef}
-            className="mx-auto rounded-full"
             style={{
               width: 64,
               height: 5,
               background: "linear-gradient(90deg, #f97316, #fbbf24)",
+              borderRadius: 9999,
+              margin: "0 auto",
               transform: "scaleX(0)",
             }}
           />
         </div>
 
         {/* Top 4 cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6">
+        <div className="news-grid">
           {visibleNews.map((item, i) => (
             <div
               key={item.id}
@@ -384,8 +561,8 @@ export default function NewsUpdates() {
         {/* Extra cards — GSAP controlled */}
         <div
           ref={extraContainerRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6 overflow-hidden"
-          style={{ display: expanded ? "grid" : "none", maxHeight: 0, opacity: 0 }}
+          className="news-grid"
+          style={{ display: expanded ? "grid" : "none", maxHeight: 0, opacity: 0, overflow: "hidden" }}
         >
           {extraNews.map((item, i) => (
             <div
@@ -399,7 +576,7 @@ export default function NewsUpdates() {
         </div>
 
         {/* Button */}
-        <div className="flex justify-center mt-6">
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
           <button
             ref={btnRef}
             onClick={expanded ? handleViewLess : handleViewMore}
@@ -407,14 +584,9 @@ export default function NewsUpdates() {
             onMouseLeave={onBtnLeave}
             onMouseDown={onBtnDown}
             onMouseUp={onBtnUp}
-            className="relative overflow-hidden px-10 py-3 font-bold text-sm sm:text-base tracking-[0.15em] text-black rounded-sm"
-            style={{
-              background: "linear-gradient(90deg, #f5a800, #f97316)",
-              border: "none",
-              willChange: "transform",
-            }}
+            className="news-view-btn"
           >
-            <span className="relative z-10 flex items-center gap-2">
+            <span style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 8 }}>
               {expanded ? (
                 <>
                   VIEW LESS
@@ -433,24 +605,19 @@ export default function NewsUpdates() {
             </span>
             {/* Shine sweep */}
             <span
-              className="absolute top-0 left-[-100%] w-full h-full"
               style={{
-                background:
-                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                position: "absolute",
+                top: 0,
+                left: "-100%",
+                width: "100%",
+                height: "100%",
+                background: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
                 animation: "shine 2.4s infinite",
               }}
             />
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes shine {
-          0% { left: -100%; }
-          60% { left: 120%; }
-          100% { left: 120%; }
-        }
-      `}</style>
     </section>
   );
 }
