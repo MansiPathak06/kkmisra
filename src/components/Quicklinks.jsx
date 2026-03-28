@@ -93,9 +93,17 @@ const cards = [
 
 const EASING = "cubic-bezier(0.4, 0, 0.2, 1)";
 
-function MediaCard({ card, index, visible }) {
+function MediaCard({ card, index, visible, cols }) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
+
+  // On touch devices show content always (no hover state)
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia("(hover: none)").matches);
+  }, []);
+
+  const active = hovered || isTouchDevice;
 
   return (
     <>
@@ -122,42 +130,51 @@ function MediaCard({ card, index, visible }) {
           animation: shimmer 0.65s ease forwards;
           pointer-events: none;
         }
-        .arrow-slide {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          position: relative;
-          overflow: hidden;
-        }
-        .arrow-slide .arrow-text {
-          transition: transform 0.3s ${EASING};
-        }
-        .arrow-slide .arrow-icon {
-          display: inline-block;
-          transition: transform 0.3s ${EASING}, opacity 0.3s ${EASING};
-        }
-        .arrow-slide .arrow-icon-enter {
-          position: absolute;
-          right: 0;
-          transform: translateX(-8px);
-          opacity: 0;
-          transition: transform 0.3s ${EASING}, opacity 0.3s ${EASING};
+
+        /* Touch / mobile: white bg, always show content with dark colors */
+        @media (hover: none) {
+          .media-card-inner {
+            background: transparent !important;
+            box-shadow: none !important;
+          }
+          .media-card-desc {
+            opacity: 1 !important;
+            transform: none !important;
+            color: #6b7280 !important;
+          }
+          .media-card-cta {
+            opacity: 1 !important;
+            transform: none !important;
+          }
+          .media-card-cta span {
+            color: #ea580c !important;
+            border-bottom-color: rgba(234,88,12,0.4) !important;
+          }
+          .media-card-cta svg path {
+            stroke: #ea580c !important;
+          }
+          .media-card-tag {
+            background: #fff3ed !important;
+            color: #ea580c !important;
+            border-color: transparent !important;
+          }
+          .media-card-icon {
+            background: #fff3ed !important;
+            color: #ea580c !important;
+          }
+          .media-card-label { color: #111 !important; }
+          .media-card-glow  { opacity: 0 !important; }
         }
       `}</style>
 
       <div
-        className={`
-          group relative flex flex-col items-start gap-3 p-8 cursor-pointer overflow-hidden
-          ${hovered ? "card-shimmer" : ""}
-        `}
+        className={`media-card-inner group relative flex flex-col items-start gap-3 cursor-pointer overflow-hidden ${hovered ? "card-shimmer" : ""}`}
         style={{
-          minHeight: "190px",
-          transition: `
-            background 0.35s ${EASING},
-            box-shadow 0.35s ${EASING},
-            transform 0.3s ${EASING}
-          `,
-          background: hovered
+          /* Padding scales with breakpoint via CSS */
+          padding: "clamp(20px, 4vw, 32px)",
+          minHeight: cols === 1 ? "auto" : cols === 2 ? "170px" : "190px",
+          transition: `background 0.35s ${EASING}, box-shadow 0.35s ${EASING}, transform 0.3s ${EASING}`,
+          background: active
             ? "linear-gradient(140deg, #b83a06 0%, #ea580c 50%, #f97316 100%)"
             : "transparent",
           transform: pressed
@@ -165,7 +182,7 @@ function MediaCard({ card, index, visible }) {
             : hovered
             ? "translateY(-4px)"
             : "translateY(0px)",
-          boxShadow: hovered
+          boxShadow: active
             ? "0 16px 40px -8px rgba(234,88,12,0.32), 0 4px 12px -4px rgba(234,88,12,0.2), inset 0 1px 0 rgba(255,255,255,0.12)"
             : "none",
           opacity: visible ? 1 : 0,
@@ -178,8 +195,9 @@ function MediaCard({ card, index, visible }) {
         onMouseUp={() => setPressed(false)}
         onClick={() => { window.location.href = card.href; }}
       >
-        {/* Radial glow spot — top-left corner */}
+        {/* Radial glow spot */}
         <div
+          className="media-card-glow"
           style={{
             position: "absolute",
             top: "-30px",
@@ -189,14 +207,15 @@ function MediaCard({ card, index, visible }) {
             borderRadius: "50%",
             background: "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)",
             transition: `opacity 0.4s ${EASING}, transform 0.4s ${EASING}`,
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "scale(1)" : "scale(0.6)",
+            opacity: active ? 1 : 0,
+            transform: active ? "scale(1)" : "scale(0.6)",
             pointerEvents: "none",
           }}
         />
 
         {/* Tag badge */}
         <span
+          className="media-card-tag"
           style={{
             fontSize: "10px",
             fontWeight: 600,
@@ -205,18 +224,19 @@ function MediaCard({ card, index, visible }) {
             padding: "3px 9px",
             borderRadius: "4px",
             transition: `background 0.3s ${EASING}, color 0.3s ${EASING}, transform 0.3s ${EASING}`,
-            background: hovered ? "rgba(255,255,255,0.2)" : "#fff3ed",
-            color: hovered ? "rgba(255,255,255,0.9)" : "#ea580c",
-            transform: hovered ? "translateY(-1px)" : "translateY(0)",
-            backdropFilter: hovered ? "blur(4px)" : "none",
-            border: hovered ? "1px solid rgba(255,255,255,0.2)" : "1px solid transparent",
+            background: active ? "rgba(255,255,255,0.2)" : "#fff3ed",
+            color: active ? "rgba(255,255,255,0.9)" : "#ea580c",
+            transform: active ? "translateY(-1px)" : "translateY(0)",
+            backdropFilter: active ? "blur(4px)" : "none",
+            border: active ? "1px solid rgba(255,255,255,0.2)" : "1px solid transparent",
           }}
         >
           {card.tag}
         </span>
 
-        {/* Icon container */}
+        {/* Icon */}
         <div
+          className="media-card-icon"
           style={{
             position: "relative",
             display: "flex",
@@ -225,19 +245,14 @@ function MediaCard({ card, index, visible }) {
             width: "48px",
             height: "48px",
             borderRadius: "14px",
-            transition: `
-              background 0.35s ${EASING},
-              color 0.35s ${EASING},
-              transform 0.35s ${EASING},
-              box-shadow 0.35s ${EASING}
-            `,
-            background: hovered ? "rgba(255,255,255,0.2)" : "#fff3ed",
-            color: hovered ? "#fff" : "#ea580c",
-            transform: hovered ? "scale(1.1) rotate(-6deg)" : "scale(1) rotate(0deg)",
-            boxShadow: hovered ? "0 4px 14px rgba(0,0,0,0.12)" : "none",
+            transition: `background 0.35s ${EASING}, color 0.35s ${EASING}, transform 0.35s ${EASING}, box-shadow 0.35s ${EASING}`,
+            background: active ? "rgba(255,255,255,0.2)" : "#fff3ed",
+            color: active ? "#fff" : "#ea580c",
+            transform: active ? "scale(1.1) rotate(-6deg)" : "scale(1) rotate(0deg)",
+            boxShadow: active ? "0 4px 14px rgba(0,0,0,0.12)" : "none",
+            flexShrink: 0,
           }}
         >
-          {/* Pulse ring on hover */}
           {hovered && (
             <span
               style={{
@@ -255,14 +270,15 @@ function MediaCard({ card, index, visible }) {
 
         {/* Label */}
         <p
+          className="media-card-label"
           style={{
-            fontSize: "15px",
+            fontSize: "clamp(13px, 2vw, 15px)",
             fontWeight: 600,
             lineHeight: 1.3,
             margin: 0,
             transition: `color 0.3s ${EASING}, transform 0.3s ${EASING}`,
-            color: hovered ? "#fff" : "#111",
-            transform: hovered ? "translateY(-1px)" : "translateY(0)",
+            color: active ? "#fff" : "#111",
+            transform: active ? "translateY(-1px)" : "translateY(0)",
           }}
         >
           {card.label}
@@ -270,28 +286,31 @@ function MediaCard({ card, index, visible }) {
 
         {/* Description */}
         <p
+          className="media-card-desc"
           style={{
-            fontSize: "13px",
+            fontSize: "clamp(11.5px, 1.5vw, 13px)",
             lineHeight: 1.65,
             margin: 0,
             color: "rgba(255,255,255,0.88)",
             transition: `opacity 0.35s ${EASING}, transform 0.35s ${EASING}`,
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "translateY(0)" : "translateY(10px)",
-            transitionDelay: hovered ? "60ms" : "0ms",
+            opacity: active ? 1 : 0,
+            transform: active ? "translateY(0)" : "translateY(10px)",
+            transitionDelay: active ? "60ms" : "0ms",
           }}
         >
           {card.desc}
         </p>
 
-        {/* CTA with animated arrow */}
+        {/* CTA */}
         <div
+          className="media-card-cta"
           style={{
             marginTop: "auto",
+            paddingTop: "4px",
             transition: `opacity 0.3s ${EASING}, transform 0.3s ${EASING}`,
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "translateY(0)" : "translateY(8px)",
-            transitionDelay: hovered ? "110ms" : "0ms",
+            opacity: active ? 1 : 0,
+            transform: active ? "translateY(0)" : "translateY(8px)",
+            transitionDelay: active ? "110ms" : "0ms",
           }}
         >
           <span
@@ -308,13 +327,12 @@ function MediaCard({ card, index, visible }) {
             }}
           >
             {card.cta}
-            {/* Animated arrow */}
             <span
               style={{
                 display: "inline-flex",
                 transition: `transform 0.3s ${EASING}`,
-                transform: hovered ? "translateX(3px)" : "translateX(0)",
-                transitionDelay: hovered ? "130ms" : "0ms",
+                transform: active ? "translateX(3px)" : "translateX(0)",
+                transitionDelay: active ? "130ms" : "0ms",
               }}
             >
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -330,6 +348,7 @@ function MediaCard({ card, index, visible }) {
 
 export default function NewsSocialSection() {
   const [visible, setVisible] = useState(false);
+  const [cols, setCols] = useState(3);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -341,29 +360,86 @@ export default function NewsSocialSection() {
     return () => obs.disconnect();
   }, []);
 
+  // Track column count for card min-height hints
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      setCols(w < 480 ? 1 : w < 768 ? 2 : 3);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <section ref={ref} className="w-full bg-white">
+      <style>{`
+        .nss-grid {
+          display: grid;
+          width: 100%;
+          /* Mobile: 1 column */
+          grid-template-columns: 1fr;
+        }
+
+        /* 2 columns from 480px */
+        @media (min-width: 480px) {
+          .nss-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        /* 3 columns from 768px */
+        @media (min-width: 768px) {
+          .nss-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        /* Cell borders — dynamically set per breakpoint */
+        .nss-cell {
+          border-bottom: 1px dashed #e5e7eb;
+        }
+
+        /* Mobile (1 col): right border none, bottom on all except last */
+        @media (max-width: 479px) {
+          .nss-cell { border-right: none !important; }
+          .nss-cell:last-child { border-bottom: none; }
+        }
+
+        /* 2-col (480–767px): right border on odd cells, no right on even */
+        @media (min-width: 480px) and (max-width: 767px) {
+          .nss-cell:nth-child(odd)  { border-right: 1px dashed #e5e7eb; }
+          .nss-cell:nth-child(even) { border-right: none; }
+          /* Last two cells: remove bottom border */
+          .nss-cell:nth-last-child(-n+2) { border-bottom: none; }
+          /* If odd total, last cell spans — no border-bottom */
+          .nss-cell:last-child { border-bottom: none; }
+        }
+
+        /* 3-col (768px+): right border except every 3rd, no bottom on last row */
+        @media (min-width: 768px) {
+          .nss-cell:nth-child(3n)   { border-right: none; }
+          .nss-cell:nth-child(3n-1) { border-right: 1px dashed #e5e7eb; }
+          .nss-cell:nth-child(3n-2) { border-right: 1px dashed #e5e7eb; }
+          .nss-cell:nth-last-child(-n+3) { border-bottom: none; }
+        }
+      `}</style>
+
       <div className="border-t border-dashed border-gray-200" />
 
-      <div
-        className="grid w-full"
-        style={{
-          gridTemplateColumns: "repeat(3, 1fr)",
-        }}
-      >
+      <div className="nss-grid">
         {cards.map((card, i) => (
           <div
             key={card.id}
+            className="nss-cell"
             style={{
-              borderRight: i % 3 !== 2 ? "1px dashed #e5e7eb" : "none",
-              borderBottom: i < 3 ? "1px dashed #e5e7eb" : "none",
               opacity: visible ? 1 : 0,
               transform: visible ? "translateY(0)" : "translateY(20px)",
               transition: `opacity 0.5s ${EASING}, transform 0.5s ${EASING}`,
               transitionDelay: `${i * 75}ms`,
             }}
           >
-            <MediaCard card={card} index={i} visible={visible} />
+            <MediaCard card={card} index={i} visible={visible} cols={cols} />
           </div>
         ))}
       </div>

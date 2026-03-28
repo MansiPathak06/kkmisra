@@ -2,6 +2,8 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef, useState } from "react";
 
 /* ── Social links ── */
@@ -120,61 +122,175 @@ export default function ContactPage() {
         document.head.appendChild(s);
       });
 
-    (async () => {
-      await load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
-      await load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
-      window.gsap.registerPlugin(window.ScrollTrigger);
-      gsapReady.current = true;
+//     (async () => {
+//       await load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
+//       await load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
+//       window.gsap.registerPlugin(window.ScrollTrigger);
+//       gsapReady.current = true;
 
-      const gsap = window.gsap;
-      const ST   = window.ScrollTrigger;
-//       gsap.fromTo(MapBandRef.current,  // ← ADD: declare const MapBandRef = useRef(null); at top
-//   { opacity: 0, y: 30 },
-//   { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-//     scrollTrigger: { trigger: MapBandRef.current, start: "top 85%", once: true } }
-// );
+//       const gsap = window.gsap;
+//       const ST   = window.ScrollTrigger;
+// //       gsap.fromTo(MapBandRef.current,  // ← ADD: declare const MapBandRef = useRef(null); at top
+// //   { opacity: 0, y: 30 },
+// //   { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+// //     scrollTrigger: { trigger: MapBandRef.current, start: "top 85%", once: true } }
+// // );
 
-      /* Hero entrance */
-      const heroTl = gsap.timeline({ delay: 0.1 });
-      heroTl
-        .fromTo(tagRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" })
-        .fromTo(h1Ref.current,    { y: 40, opacity: 0, clipPath: "inset(0 0 100% 0)" },
-                                  { y: 0,  opacity: 1, clipPath: "inset(0 0 0% 0)",   duration: 0.8, ease: "power3.out" }, "-=0.3")
-        .fromTo(subRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
-        .fromTo(dividerRef.current, { scaleX: 0, transformOrigin: "left" },
-                                    { scaleX: 1, duration: 0.7, ease: "power2.out" }, "-=0.35");
+//       /* Hero entrance */
+//       const heroTl = gsap.timeline({ delay: 0.1 });
+//       heroTl
+//         .fromTo(tagRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" })
+//         .fromTo(h1Ref.current,    { y: 40, opacity: 0, clipPath: "inset(0 0 100% 0)" },
+//                                   { y: 0,  opacity: 1, clipPath: "inset(0 0 0% 0)",   duration: 0.8, ease: "power3.out" }, "-=0.3")
+//         .fromTo(subRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
+//         .fromTo(dividerRef.current, { scaleX: 0, transformOrigin: "left" },
+//                                     { scaleX: 1, duration: 0.7, ease: "power2.out" }, "-=0.35");
 
-      /* Left column scroll reveal */
-      gsap.fromTo(leftColRef.current,
-        { x: -60, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.9, ease: "power3.out",
-          scrollTrigger: { trigger: leftColRef.current, start: "top 78%", once: true } });
+//       /* Left column scroll reveal */
+//       gsap.fromTo(leftColRef.current,
+//         { x: -60, opacity: 0 },
+//         { x: 0, opacity: 1, duration: 0.9, ease: "power3.out",
+//           scrollTrigger: { trigger: leftColRef.current, start: "top 78%", once: true } });
 
-      /* Info cards stagger */
-      gsap.fromTo(infoRefs.current.filter(Boolean),
-        { x: -40, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.1,
-          scrollTrigger: { trigger: leftColRef.current, start: "top 72%", once: true }, delay: 0.2 });
+//       /* Info cards stagger */
+//       gsap.fromTo(infoRefs.current.filter(Boolean),
+//         { x: -40, opacity: 0 },
+//         { x: 0, opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.1,
+//           scrollTrigger: { trigger: leftColRef.current, start: "top 72%", once: true }, delay: 0.2 });
 
-      /* Social icons stagger */
-      gsap.fromTo(socialRefs.current.filter(Boolean),
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)", stagger: 0.08,
-          scrollTrigger: { trigger: leftColRef.current, start: "top 65%", once: true }, delay: 0.4 });
+//       /* Social icons stagger */
+//       gsap.fromTo(socialRefs.current.filter(Boolean),
+//         { scale: 0, opacity: 0 },
+//         { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)", stagger: 0.08,
+//           scrollTrigger: { trigger: leftColRef.current, start: "top 65%", once: true }, delay: 0.4 });
 
-      /* Right form */
-      gsap.fromTo(rightColRef.current,
-        { x: 60, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.9, ease: "power3.out",
-          scrollTrigger: { trigger: rightColRef.current, start: "top 78%", once: true } });
+//       /* Right form */
+//       gsap.fromTo(rightColRef.current,
+//         { x: 60, opacity: 0 },
+//         { x: 0, opacity: 1, duration: 0.9, ease: "power3.out",
+//           scrollTrigger: { trigger: rightColRef.current, start: "top 78%", once: true } });
 
-      /* Submit button */
-      gsap.fromTo(submitRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)",
-          scrollTrigger: { trigger: submitRef.current, start: "top 90%", once: true }, delay: 0.3 });
+//       /* Submit button */
+//       gsap.fromTo(submitRef.current,
+//         { y: 20, opacity: 0 },
+//         { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)",
+//           scrollTrigger: { trigger: submitRef.current, start: "top 90%", once: true }, delay: 0.3 });
 
-    })();
+//     })();
+useEffect(() => {
+  // ✅ Register plugin safely
+  gsap.registerPlugin(ScrollTrigger);
+  gsapReady.current = true;
+
+  // ✅ Safety check (prevents your error)
+  if (!tagRef.current) return;
+
+  /* Hero entrance */
+  const heroTl = gsap.timeline({ delay: 0.1 });
+
+  heroTl
+    .fromTo(tagRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" })
+    .fromTo(
+      h1Ref.current,
+      { y: 40, opacity: 0, clipPath: "inset(0 0 100% 0)" },
+      { y: 0, opacity: 1, clipPath: "inset(0 0 0% 0)", duration: 0.8, ease: "power3.out" },
+      "-=0.3"
+    )
+    .fromTo(subRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
+    .fromTo(
+      dividerRef.current,
+      { scaleX: 0, transformOrigin: "left" },
+      { scaleX: 1, duration: 0.7, ease: "power2.out" },
+      "-=0.35"
+    );
+
+  /* Left column scroll reveal */
+  if (leftColRef.current) {
+    gsap.fromTo(
+      leftColRef.current,
+      { x: -60, opacity: 0 },
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: leftColRef.current, start: "top 78%", once: true },
+      }
+    );
+  }
+
+  /* Info cards stagger */
+  const infoEls = infoRefs.current.filter(Boolean);
+  if (infoEls.length) {
+    gsap.fromTo(
+      infoEls,
+      { x: -40, opacity: 0 },
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out",
+        stagger: 0.1,
+        scrollTrigger: { trigger: leftColRef.current, start: "top 72%", once: true },
+        delay: 0.2,
+      }
+    );
+  }
+
+  /* Social icons stagger */
+  const socialEls = socialRefs.current.filter(Boolean);
+  if (socialEls.length) {
+    gsap.fromTo(
+      socialEls,
+      { scale: 0, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+        stagger: 0.08,
+        scrollTrigger: { trigger: leftColRef.current, start: "top 65%", once: true },
+        delay: 0.4,
+      }
+    );
+  }
+
+  /* Right form */
+  if (rightColRef.current) {
+    gsap.fromTo(
+      rightColRef.current,
+      { x: 60, opacity: 0 },
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: rightColRef.current, start: "top 78%", once: true },
+      }
+    );
+  }
+
+  /* Submit button */
+  if (submitRef.current) {
+    gsap.fromTo(
+      submitRef.current,
+      { y: 20, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.5)",
+        scrollTrigger: { trigger: submitRef.current, start: "top 90%", once: true },
+        delay: 0.3,
+      }
+    );
+  }
+
+  // ✅ Cleanup (important)
+  return () => {
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+  };
+}, []);
 
     return () => {
       if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach(t => t.kill());
