@@ -27,7 +27,7 @@ const cards = [
     type: "quotes",
     images: ["/images/image9.jpeg", "/images/image10.jpeg"],
     bgImage: "/images/image9.jpeg",
-    href: "/quotes",
+    href: "/media",
   },
   {
     id: "videos",
@@ -35,7 +35,7 @@ const cards = [
     type: "videos",
     images: ["/images/image11.jpeg"],
     bgImage: "/images/image11.jpeg",
-    href: "/videos",
+    href: "/gallery",
   },
   {
     id: "speeches",
@@ -43,7 +43,7 @@ const cards = [
     type: "speeches",
     images: ["/images/image12.jpeg"],
     bgImage: "/images/image12.jpeg",
-    href: "/speeches",
+    href: "/media",
   },
 ];
 
@@ -189,7 +189,8 @@ function Card({ card, index }) {
         position: "relative",
         overflow: "hidden",
         clipPath: index % 2 === 0 ? clipEven : clipOdd,
-        minHeight: "clamp(300px,44vw,560px)",
+        // minHeight: "clamp(300px,44vw,560px)",
+        height: "100%",
         textDecoration: "none",
         cursor: "pointer",
         willChange: "transform",
@@ -581,8 +582,12 @@ export default function MediaSection() {
         .media-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
+           grid-auto-rows: 1fr;
           gap: 0;
         }
+          .media-grid > div {
+  height: 100%;
+}
         @media (max-width: 900px) {
           .media-grid { grid-template-columns: repeat(2, 1fr); }
         }
