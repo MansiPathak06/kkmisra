@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const allNews = [
   {
@@ -65,42 +65,111 @@ const allNews = [
     title: "Discussion Held on Union Budget 2026-27 at Budget Chaupal",
     date: "February 2026",
     description:
-      "A Budget Chaupal was आयोजित in Moradabad to discuss the Union Budget 2026-27, highlighting its benefits for farmers, youth, businesses, and overall economic growth.",
+      "A Budget Chaupal was organised in Moradabad to discuss the Union Budget 2026-27, highlighting its benefits for farmers, youth, businesses, and overall economic growth.",
   },
 ];
 
-function NewsCard({ item, index, visible }) {
+function NewsCard({ item, cardRef }) {
+  const imgRef = useRef(null);
+  const overlayRef = useRef(null);
+  const titleRef = useRef(null);
+  const arrowRef = useRef(null);
+
+  const handleMouseEnter = useCallback(() => {
+    if (!window.gsap) return;
+    const gsap = window.gsap;
+    gsap.to(imgRef.current, { scale: 1.08, duration: 0.55, ease: "power2.out" });
+    gsap.to(overlayRef.current, { opacity: 1, duration: 0.35, ease: "power2.out" });
+    gsap.to(titleRef.current, { color: "#f97316", x: 4, duration: 0.3, ease: "power2.out" });
+    gsap.to(arrowRef.current, { x: 6, opacity: 1, duration: 0.35, ease: "power2.out" });
+    gsap.to(cardRef.current, {
+      y: -6,
+      boxShadow: "0 20px 48px rgba(249,115,22,0.18), 0 4px 16px rgba(0,0,0,0.10)",
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  }, [cardRef]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!window.gsap) return;
+    const gsap = window.gsap;
+    gsap.to(imgRef.current, { scale: 1, duration: 0.55, ease: "power2.inOut" });
+    gsap.to(overlayRef.current, { opacity: 0, duration: 0.35, ease: "power2.inOut" });
+    gsap.to(titleRef.current, { color: "#111827", x: 0, duration: 0.3, ease: "power2.inOut" });
+    gsap.to(arrowRef.current, { x: 0, opacity: 0, duration: 0.3, ease: "power2.inOut" });
+    gsap.to(cardRef.current, {
+      y: 0,
+      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+      duration: 0.4,
+      ease: "power2.inOut",
+    });
+  }, [cardRef]);
+
   return (
     <div
-      className="flex gap-3 sm:gap-4 items-start group"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: `opacity 0.5s ease ${index * 0.08}s, transform 0.5s ease ${index * 0.08}s`,
-      }}
+      ref={cardRef}
+      className="flex gap-4 items-start cursor-pointer bg-white rounded-xl p-3 sm:p-4"
+      style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)", willChange: "transform" }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Thumbnail */}
-      <div className="flex-shrink-0 w-28 h-20 sm:w-36 sm:h-24 lg:w-44 lg:h-28 overflow-hidden rounded-sm shadow-md">
+      <div className="flex-shrink-0 w-28 h-20 sm:w-36 sm:h-24 lg:w-44 lg:h-28 overflow-hidden rounded-lg relative">
         <img
+          ref={imgRef}
           src={item.image}
           alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover"
+          style={{ willChange: "transform" }}
           onError={(e) => {
             e.target.style.background = "linear-gradient(135deg,#f97316,#ea580c)";
-            e.target.style.display = "block";
-            e.target.alt = "";
           }}
         />
+        {/* Shimmer overlay on hover */}
+        <div
+          ref={overlayRef}
+          className="absolute inset-0 rounded-lg"
+          style={{
+            opacity: 0,
+            background:
+              "linear-gradient(120deg, rgba(249,115,22,0.22) 0%, rgba(255,255,255,0.12) 60%, rgba(249,115,22,0.10) 100%)",
+          }}
+        />
+        {/* Date badge */}
+        <div className="absolute bottom-1.5 left-1.5 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+          {item.date}
+        </div>
       </div>
 
       {/* Text */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-gray-900 leading-snug mb-1 group-hover:text-orange-600 transition-colors duration-200"
-          style={{ fontSize: "clamp(13px, 1.3vw, 16px)" }}>
-          {item.title}
-        </h3>
-        <p className="text-orange-500 text-xs sm:text-sm mb-1.5 font-medium">{item.date}</p>
-        <p className="text-gray-600 leading-relaxed" style={{ fontSize: "clamp(11px, 1.05vw, 14px)" }}>
+      <div className="flex-1 min-w-0 py-1">
+        <div className="flex items-start justify-between gap-2 mb-1.5">
+          <h3
+            ref={titleRef}
+            className="font-bold text-gray-900 leading-snug"
+            style={{ fontSize: "clamp(13px, 1.3vw, 16px)", willChange: "transform, color" }}
+          >
+            {item.title}
+          </h3>
+          {/* Arrow icon */}
+          <span
+            ref={arrowRef}
+            className="flex-shrink-0 mt-0.5 text-orange-500"
+            style={{ opacity: 0, willChange: "transform, opacity" }}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </span>
+        </div>
+
+        {/* Animated underline */}
+        <div className="w-8 h-[3px] bg-gradient-to-r from-orange-400 to-orange-200 rounded-full mb-2" />
+
+        <p
+          className="text-gray-500 leading-relaxed"
+          style={{ fontSize: "clamp(11px, 1.05vw, 13.5px)" }}
+        >
           {item.description}
         </p>
       </div>
@@ -108,39 +177,162 @@ function NewsCard({ item, index, visible }) {
   );
 }
 
+function NewsCardWrapper({ item, index, animRef }) {
+  const cardRef = useRef(null);
+
+  // Store ref for parent to animate
+  useEffect(() => {
+    if (animRef) animRef.current[index] = cardRef.current;
+  }, [animRef, index]);
+
+  return <NewsCard item={item} cardRef={cardRef} />;
+}
+
 export default function NewsUpdates() {
   const [expanded, setExpanded] = useState(false);
-  const [cardsVisible, setCardsVisible] = useState(false);
-  const [extraVisible, setExtraVisible] = useState(false);
   const sectionRef = useRef(null);
-  const extraRef = useRef(null);
+  const headingRef = useRef(null);
+  const accentRef = useRef(null);
+  const topCardsRefs = useRef([]);
+  const extraCardsRefs = useRef([]);
+  const extraContainerRef = useRef(null);
+  const btnRef = useRef(null);
+  const gsapReady = useRef(false);
 
-  // Intersection observer for initial entrance animation
+  // Load GSAP + ScrollTrigger
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setCardsVisible(true), 100);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const loadScript = (src) =>
+      new Promise((res) => {
+        if (document.querySelector(`script[src="${src}"]`) && window.gsap) return res();
+        const s = document.createElement("script");
+        s.src = src;
+        s.onload = res;
+        document.head.appendChild(s);
+      });
+
+    (async () => {
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
+      window.gsap.registerPlugin(window.ScrollTrigger);
+      gsapReady.current = true;
+
+      const gsap = window.gsap;
+      const ScrollTrigger = window.ScrollTrigger;
+
+      // Set initial hidden state
+      gsap.set(headingRef.current, { opacity: 0, y: -30 });
+      gsap.set(accentRef.current, { scaleX: 0, transformOrigin: "center" });
+      gsap.set(topCardsRefs.current, { opacity: 0, y: 50, scale: 0.96 });
+      gsap.set(btnRef.current, { opacity: 0, y: 20 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 72%",
+          once: true,
+        },
+      });
+
+      tl.to(headingRef.current, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" })
+        .to(accentRef.current, { scaleX: 1, duration: 0.55, ease: "power2.out" }, "-=0.4")
+        .to(
+          topCardsRefs.current,
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.65,
+            ease: "power3.out",
+            stagger: {
+              amount: 0.45,
+              from: "start",
+            },
+          },
+          "-=0.3"
+        )
+        .to(btnRef.current, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.6)" }, "-=0.2");
+    })();
+
+    return () => {
+      if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
   }, []);
 
   const handleViewMore = () => {
     setExpanded(true);
-    setTimeout(() => setExtraVisible(true), 50);
+    setTimeout(() => {
+      if (!window.gsap || !extraContainerRef.current) return;
+      const gsap = window.gsap;
+
+      gsap.set(extraContainerRef.current, { display: "grid", opacity: 0, maxHeight: 0 });
+      gsap.set(extraCardsRefs.current.filter(Boolean), { opacity: 0, x: 60, scale: 0.96 });
+
+      gsap.to(extraContainerRef.current, {
+        maxHeight: 3000,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+
+      gsap.to(extraCardsRefs.current.filter(Boolean), {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: { amount: 0.4, from: "start" },
+        delay: 0.1,
+      });
+
+      // Animate button label swap via subtle scale
+      gsap.fromTo(btnRef.current, { scale: 0.93 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
+    }, 30);
   };
 
   const handleViewLess = () => {
-    setExtraVisible(false);
-    setTimeout(() => {
-      setExpanded(false);
-      // Scroll back up to section
-      sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 400);
+    if (!window.gsap || !extraContainerRef.current) return;
+    const gsap = window.gsap;
+
+    gsap.to(extraCardsRefs.current.filter(Boolean), {
+      opacity: 0,
+      x: 60,
+      scale: 0.95,
+      duration: 0.4,
+      ease: "power2.in",
+      stagger: { amount: 0.2, from: "end" },
+    });
+
+    gsap.to(extraContainerRef.current, {
+      maxHeight: 0,
+      opacity: 0,
+      duration: 0.55,
+      ease: "power2.in",
+      delay: 0.25,
+      onComplete: () => {
+        setExpanded(false);
+        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      },
+    });
+
+    gsap.fromTo(btnRef.current, { scale: 0.93 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
+  };
+
+  // Button hover
+  const onBtnEnter = (e) => {
+    if (window.gsap)
+      window.gsap.to(e.currentTarget, { scale: 1.05, duration: 0.25, ease: "power2.out" });
+  };
+  const onBtnLeave = (e) => {
+    if (window.gsap)
+      window.gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.inOut" });
+  };
+  const onBtnDown = (e) => {
+    if (window.gsap)
+      window.gsap.to(e.currentTarget, { scale: 0.96, duration: 0.12, ease: "power2.in" });
+  };
+  const onBtnUp = (e) => {
+    if (window.gsap)
+      window.gsap.to(e.currentTarget, { scale: 1.04, duration: 0.2, ease: "back.out(2)" });
   };
 
   const visibleNews = allNews.slice(0, 4);
@@ -149,86 +341,116 @@ export default function NewsUpdates() {
   return (
     <section
       ref={sectionRef}
-      className="w-full py-10 sm:py-14 px-4"
-      style={{ background: "#e8e8e8" }}
+      className="w-full py-12 sm:py-16 px-4 overflow-hidden"
+      style={{ background: "linear-gradient(160deg, #efefef 0%, #e2e2e2 100%)" }}
     >
       <div className="max-w-6xl mx-auto">
-        {/* Section heading */}
-        <h2
-          className="text-center font-bold text-gray-900 mb-8 sm:mb-10"
-          style={{
-            
-            fontSize: "clamp(26px, 4vw, 42px)",
-            opacity: cardsVisible ? 1 : 0,
-            transform: cardsVisible ? "translateY(0)" : "translateY(-16px)",
-            transition: "opacity 0.5s ease, transform 0.5s ease",
-          }}
-        >
-          Highlights
-        </h2>
 
-        {/* Top 4 cards — 2-column grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8">
+        {/* Heading */}
+        <div className="text-center mb-10 sm:mb-12">
+          <h2
+            ref={headingRef}
+            className="font-extrabold text-gray-900 mb-3 tracking-tight"
+            style={{ fontSize: "clamp(28px, 4vw, 46px)" }}
+          >
+            Highlights
+          </h2>
+          {/* Accent bar */}
+          <div
+            ref={accentRef}
+            className="mx-auto rounded-full"
+            style={{
+              width: 64,
+              height: 5,
+              background: "linear-gradient(90deg, #f97316, #fbbf24)",
+              transform: "scaleX(0)",
+            }}
+          />
+        </div>
+
+        {/* Top 4 cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6">
           {visibleNews.map((item, i) => (
-            <NewsCard key={item.id} item={item} index={i} visible={cardsVisible} />
+            <div
+              key={item.id}
+              ref={(el) => (topCardsRefs.current[i] = el)}
+              style={{ opacity: 0 }}
+            >
+              <NewsCard item={item} cardRef={{ current: topCardsRefs.current[i] }} />
+            </div>
           ))}
         </div>
 
-        {/* Extra cards — animated expand */}
-        {expanded && (
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 overflow-hidden"
+        {/* Extra cards — GSAP controlled */}
+        <div
+          ref={extraContainerRef}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6 overflow-hidden"
+          style={{ display: expanded ? "grid" : "none", maxHeight: 0, opacity: 0 }}
+        >
+          {extraNews.map((item, i) => (
+            <div
+              key={item.id}
+              ref={(el) => (extraCardsRefs.current[i] = el)}
+              style={{ opacity: 0 }}
+            >
+              <NewsCard item={item} cardRef={{ current: extraCardsRefs.current[i] }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Button */}
+        <div className="flex justify-center mt-6">
+          <button
+            ref={btnRef}
+            onClick={expanded ? handleViewLess : handleViewMore}
+            onMouseEnter={onBtnEnter}
+            onMouseLeave={onBtnLeave}
+            onMouseDown={onBtnDown}
+            onMouseUp={onBtnUp}
+            className="relative overflow-hidden px-10 py-3 font-bold text-sm sm:text-base tracking-[0.15em] text-black rounded-sm"
             style={{
-              maxHeight: extraVisible ? "2000px" : "0",
-              opacity: extraVisible ? 1 : 0,
-              transition: "max-height 0.6s ease, opacity 0.4s ease",
+              background: "linear-gradient(90deg, #f5a800, #f97316)",
+              border: "none",
+              willChange: "transform",
             }}
           >
-            {extraNews.map((item, i) => (
-              <NewsCard key={item.id} item={item} index={i} visible={extraVisible} />
-            ))}
-          </div>
-        )}
-
-        {/* VIEW MORE / VIEW LESS button */}
-        <div className="flex justify-center mt-4">
-          {!expanded ? (
-            <button
-              onClick={handleViewMore}
-              className="px-8 py-3 font-bold text-sm sm:text-base tracking-widest text-black cursor-pointer"
+            <span className="relative z-10 flex items-center gap-2">
+              {expanded ? (
+                <>
+                  VIEW LESS
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  VIEW MORE
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </>
+              )}
+            </span>
+            {/* Shine sweep */}
+            <span
+              className="absolute top-0 left-[-100%] w-full h-full"
               style={{
-                background: "#f5a800",
-                border: "none",
-                letterSpacing: "0.12em",
-                transition: "background 0.2s, transform 0.15s",
+                background:
+                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                animation: "shine 2.4s infinite",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#e09600")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#f5a800")}
-              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
-              VIEW MORE
-            </button>
-          ) : (
-            <button
-              onClick={handleViewLess}
-              className="px-8 py-3 font-bold text-sm sm:text-base tracking-widest text-black cursor-pointer"
-              style={{
-                background: "#f5a800",
-                border: "none",
-                letterSpacing: "0.12em",
-                transition: "background 0.2s, transform 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#e09600")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#f5a800")}
-              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
-              VIEW LESS
-            </button>
-          )}
+            />
+          </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes shine {
+          0% { left: -100%; }
+          60% { left: 120%; }
+          100% { left: 120%; }
+        }
+      `}</style>
     </section>
   );
 }

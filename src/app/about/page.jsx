@@ -204,7 +204,7 @@ export default function AboutPage() {
         }}
       >
         {/* Timeline dot */}
-        <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 border-4 border-white shadow-lg transition-all duration-500 z-10
+        <div className="absolute -left-[30px] top-1 w-6 h-6  bg-gradient-to-r from-orange-500 to-orange-600 border-4 border-white shadow-lg transition-all rounded-full duration-500 z-10
           group-hover:scale-125
           group-hover:shadow-[0_0_20px_rgba(249,115,22,0.8)]
         " />
