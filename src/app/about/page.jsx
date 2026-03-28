@@ -61,7 +61,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-white/20 rotate-12 translate-x-[100%] group-hover:translate-x-[-100%] transition-transform duration-700 ease-out" />
               </a>
               <a
-                href="#contact"
+                href="/contact"
                 className="group border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-7 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25"
               >
                 Contact

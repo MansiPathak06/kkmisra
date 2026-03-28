@@ -108,7 +108,7 @@ export default function ContactPage() {
   const submitRef    = useRef(null);
   const particleRef  = useRef(null);
   const gsapReady    = useRef(false);
-  const MapBandRef = useRef(null);
+//   const MapBandRef = useRef(null);
 
   /* ── Load GSAP + ScrollTrigger ── */
   useEffect(() => {
@@ -128,11 +128,11 @@ export default function ContactPage() {
 
       const gsap = window.gsap;
       const ST   = window.ScrollTrigger;
-      gsap.fromTo(MapBandRef.current,  // ← ADD: declare const MapBandRef = useRef(null); at top
-  { opacity: 0, y: 30 },
-  { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-    scrollTrigger: { trigger: MapBandRef.current, start: "top 85%", once: true } }
-);
+//       gsap.fromTo(MapBandRef.current,  // ← ADD: declare const MapBandRef = useRef(null); at top
+//   { opacity: 0, y: 30 },
+//   { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+//     scrollTrigger: { trigger: MapBandRef.current, start: "top 85%", once: true } }
+// );
 
       /* Hero entrance */
       const heroTl = gsap.timeline({ delay: 0.1 });
@@ -676,7 +676,7 @@ export default function ContactPage() {
       {/* ═══════════════════════════════════════
           MAP PLACEHOLDER BAND
       ═══════════════════════════════════════ */}
-     <MapBand ref={MapBandRef} />
+     <MapBand/>
 
       <style>{`
         @media (max-width: 860px) {
@@ -762,13 +762,19 @@ function SuccessState() {
 function MapBand() {
   const ref = useRef(null);
   useEffect(() => {
-    if (!window.gsap || !window.ScrollTrigger) return;
-    window.gsap.fromTo(ref.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-        scrollTrigger: { trigger: ref.current, start: "top 85%", once: true } }
-    );
-  }, []);
+  // ✅ ADD SAFETY CHECK: Wait for GSAP + element to exist
+  const checkReady = () => {
+    if (!window.gsap || !window.ScrollTrigger || !ref.current) {
+      requestAnimationFrame(checkReady);  // Try again next frame
+      return;
+    }
+    window.gsap.fromTo(ref.current, { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+      scrollTrigger: { trigger: ref.current, start: "top 85%", once: true }
+    });
+  };
+  checkReady();
+}, []);
   return (
     <div ref={ref} style={{
       maxWidth: 1200, margin: "0 auto clamp(48px,6vw,80px)",
