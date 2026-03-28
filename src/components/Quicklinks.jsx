@@ -9,7 +9,7 @@ const cards = [
     label: "Latest News",
     desc: "Stay informed with breaking updates, constituency announcements, and key developments from KK Misra's office.",
     cta: "Read More",
-    href: "/news",
+    href: "/media",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8L4 6v14a2 2 0 002 2z"/>
@@ -23,7 +23,7 @@ const cards = [
     label: "Press Releases",
     desc: "Official statements, government scheme notifications, and public communiqués directly from the constituency office.",
     cta: "View All",
-    href: "/press",
+    href: "/media",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
@@ -39,7 +39,7 @@ const cards = [
     label: "Social Feed",
     desc: "Follow KK Misra's real-time posts, public interactions, and on-ground updates across all social platforms.",
     cta: "Follow Now",
-    href: "/social",
+    href: "/gallery",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
@@ -52,7 +52,7 @@ const cards = [
     label: "Videos & Highlights",
     desc: "Watch speeches, inaugurations, public events, and constituency field visits curated in one place.",
     cta: "Watch Now",
-    href: "/videos",
+    href: "/gallery",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <polygon points="23 7 16 12 23 17 23 7"/>
@@ -81,7 +81,7 @@ const cards = [
     label: "Stay Connected",
     desc: "Subscribe to the newsletter and get weekly updates, scheme benefits, and direct communication from KK Misra's office.",
     cta: "Subscribe",
-    href: "/newsletter",
+    href: "/contact",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
